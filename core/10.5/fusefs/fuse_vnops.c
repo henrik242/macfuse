@@ -744,6 +744,8 @@ fuse_vnop_getxattr(struct vnop_getxattr_args *ap)
     } else {
         fgxi->size = 0;
     }
+
+    fgxi->position = (uint32_t)uio_offset(uio);
     
     memcpy((char *)fdi.indata + sizeof(*fgxi), name, namelen);
     ((char *)fdi.indata)[sizeof(*fgxi) + namelen] = '\0';
