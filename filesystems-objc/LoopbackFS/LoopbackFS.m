@@ -318,14 +318,15 @@
 
 - (NSData *)valueOfExtendedAttribute:(NSString *)name 
                         ofItemAtPath:(NSString *)path
+                            position:(off_t)position
                                error:(NSError **)error {
-  LOG_OP(@"[0x%x] value of extended attribute: %@ forPath:%@", 
-         [NSThread currentThread], name, path);
+  LOG_OP(@"[0x%x] value of extended attribute: %@ forPath:%@, position:%lld", 
+         [NSThread currentThread], name, path, position);
   
   NSString* p = [rootPath_ stringByAppendingString:path];
 
   ssize_t size = getxattr([p UTF8String], [name UTF8String], nil, 0,
-                         0, 0);
+                         position, 0);
   if ( size < 0 ) {
     *error = [NSError errorWithPOSIXCode:errno];
     return nil;
@@ -333,7 +334,7 @@
   NSMutableData* data = [NSMutableData dataWithLength:size];
   size = getxattr([p UTF8String], [name UTF8String], 
                   [data mutableBytes], [data length],
-                  0, 0);
+                  position, 0);
   if ( size < 0 ) {
     *error = [NSError errorWithPOSIXCode:errno];
     return nil;
@@ -344,15 +345,21 @@
 - (BOOL)setExtendedAttribute:(NSString *)name 
                 ofItemAtPath:(NSString *)path 
                        value:(NSData *)value
-                       flags:(int)flags
+                    position:(off_t)position
+                       options:(int)options
                        error:(NSError **)error {
-  LOG_OP(@"[0x%x] set extended attribute: %@ forPath:%@", 
-         [NSThread currentThread], name, path);
+  LOG_OP(@"[0x%x] set extended attribute: %@ forPath:%@, position=%lld", 
+         [NSThread currentThread], name, path, position);
 
+  // Setting com.apple.FinderInfo happens in the kernel, so security related 
+  // bits are set in the options. We need to explicitly remove them or the call
+  // to setxattr will fail.
+  // TODO: Why is this necessary?
+  options &= ~(XATTR_NOSECURITY | XATTR_NODEFAULT);
   NSString* p = [rootPath_ stringByAppendingString:path];
   int ret = setxattr([p UTF8String], [name UTF8String], 
                      [value bytes], [value length], 
-                     0, 0);
+                     position, options);
   if ( ret < 0 ) {
     *error = [NSError errorWithPOSIXCode:errno];
     return NO;
