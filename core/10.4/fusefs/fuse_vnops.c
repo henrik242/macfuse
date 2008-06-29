@@ -744,6 +744,8 @@ fuse_vnop_getxattr(struct vnop_getxattr_args *ap)
     } else {
         fgxi->size = 0;
     }
+
+    fgxi->position = (uint32_t)uio_offset(uio);
     
     memcpy((char *)fdi.indata + sizeof(*fgxi), name, namelen);
     ((char *)fdi.indata)[sizeof(*fgxi) + namelen] = '\0';
@@ -2986,6 +2988,7 @@ fuse_vnop_setxattr(struct vnop_setxattr_args *ap)
     int iov_err = 0;
     int i, iov_cnt, namelen;
     size_t attrsize;
+    off_t saved_offset;
 
     fuse_trace_printf_vnop();
 
@@ -3015,6 +3018,7 @@ fuse_vnop_setxattr(struct vnop_setxattr_args *ap)
     }
 
     attrsize = uio_resid(uio);
+    saved_offset = uio_offset(uio);
 
     iov_cnt = uio_iovcnt(uio);
     if (iov_cnt > FUSE_UIO_BACKUP_MAX) {
@@ -3047,6 +3051,7 @@ fuse_vnop_setxattr(struct vnop_setxattr_args *ap)
 
     fsxi->size = attrsize;
     fsxi->flags = ap->a_options;
+    fsxi->position = (uint32_t)saved_offset;
 
     if (attrsize > FUSE_REASONABLE_XATTRSIZE) {
         fticket_set_killl(fdi.tick);
@@ -3080,7 +3085,7 @@ fuse_vnop_setxattr(struct vnop_setxattr_args *ap)
                 a_spacetype = UIO_SYSSPACE;
             }
 
-            uio_reset(uio, (off_t)0, a_spacetype, uio_rw(uio));
+            uio_reset(uio, saved_offset, a_spacetype, uio_rw(uio));
             for (i = 0; i < iov_cnt; i++) {
                 uio_addiov(uio, CAST_USER_ADDR_T(a_baseaddr[i]), a_length[i]);
             }

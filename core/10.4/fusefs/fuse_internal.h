@@ -390,6 +390,11 @@ fuse_blanket_deny(vnode_t vp, vfs_context_t context)
         return 0;
     }
 
+    /* If kernel itself, allow. */
+    if (vfs_context_pid(context) == 0) {
+        return 0;
+    }
+
     return 1;
 }
 
@@ -522,15 +527,19 @@ fuse_internal_attr_loadvap(vnode_t vp, struct vnode_attr *out_vap)
      */
     /* ATTR_FUDGE_CASE */
     if (!vfs_issynchronous(mp)) {
-        VATTR_RETURN(out_vap, va_data_size, fvdat->filesize);
+        /* Bring in_vap up to date if need be. */
         VATTR_RETURN(in_vap,  va_data_size, fvdat->filesize);
     } else {
-#if WORKS_ON_TIGER_BUT_NOT_ON_LEOPARD
-        VATTR_RETURN(out_vap, va_data_size, in_vap->va_data_size);
-#endif
-        VATTR_RETURN(out_vap, va_data_size, fvdat->filesize);
-        VATTR_RETURN(in_vap,  va_data_size, fvdat->filesize);
+        /* The size might have changd remotely. */
+        if (fvdat->filesize != (off_t)in_vap->va_data_size) {
+            /* Remote size overrides what we have. */
+            (void)ubc_msync(vp, (off_t)0, fvdat->filesize, (off_t*)0,
+                            UBC_PUSHALL | UBC_INVALIDATE | UBC_SYNC);
+            fvdat->filesize = in_vap->va_data_size;
+            ubc_setsize(vp, fvdat->filesize);
+        }
     }
+    VATTR_RETURN(out_vap, va_data_size, in_vap->va_data_size);
 
     VATTR_RETURN(out_vap, va_access_time, in_vap->va_access_time);
     VATTR_RETURN(out_vap, va_change_time, in_vap->va_change_time);

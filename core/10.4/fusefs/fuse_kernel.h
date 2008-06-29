@@ -288,11 +288,19 @@ struct fuse_fsync_in {
 struct fuse_setxattr_in {
 	__u32	size;
 	__u32	flags;
+#if (__FreeBSD__ >= 10)
+	__u32	position;
+	__u32	padding;
+#endif /* __FreeBSD__ >= 10 */
 };
 
 struct fuse_getxattr_in {
 	__u32	size;
 	__u32	padding;
+#if (__FreeBSD__ >= 10)
+	__u32	position;
+	__u32	padding2;
+#endif /* __FreeBSD__ >= 10 */
 };
 
 struct fuse_getxattr_out {
