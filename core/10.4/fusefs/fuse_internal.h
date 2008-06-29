@@ -533,8 +533,8 @@ fuse_internal_attr_loadvap(vnode_t vp, struct vnode_attr *out_vap)
         /* The size might have changd remotely. */
         if (fvdat->filesize != (off_t)in_vap->va_data_size) {
             /* Remote size overrides what we have. */
-            (void)ubc_msync(vp, (off_t)0, fvdat->filesize, (off_t*)0,
-                            UBC_PUSHALL | UBC_INVALIDATE | UBC_SYNC);
+            (void)ubc_sync_range(vp, (off_t)0, fvdat->filesize,
+                                 UBC_PUSHALL | UBC_INVALIDATE | UBC_SYNC);
             fvdat->filesize = in_vap->va_data_size;
             ubc_setsize(vp, fvdat->filesize);
         }
