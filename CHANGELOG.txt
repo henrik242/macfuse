@@ -12,6 +12,9 @@
 
   * Fix: Packaging: The `IFPkgFlagInstalledSize` field is handled better in the package.
 
+  * MacFUSE.framework Changes
+     * Support for a `position` parameter in extended attributes delegate methods. The old methods are deprecated, although they will still be called (for now) if the file system does not implement the newer methods.
+
 == MacFUSE 1.5 (April 25, 2008) ==
 
   * Bugfix: Fixed bug where the Finder would sometimes report zero KB free in a newly mounted MacFUSE volume.
