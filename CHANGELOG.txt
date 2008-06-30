@@ -1,6 +1,6 @@
 = Changes and Feature Additions in MacFUSE Core Binary Releases =
 
-== MacFUSE 1.7 (June ??, 2008) ==
+== MacFUSE 1.7 (June 30, 2008) ==
 
   * Bugfix: Fixed a kernel issue that could cause resource forks larger than 128KB to be truncated when accessed through the Finder.
 
