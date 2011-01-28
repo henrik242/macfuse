@@ -23,6 +23,11 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		43C721971268987500C094A0 /* GTMHTTPFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 43C721921268981E00C094A0 /* GTMHTTPFetcher.m */; };
+		43C721DC12689B6100C094A0 /* GTMBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 43C7218E126897FB00C094A0 /* GTMBase64.m */; };
+		43C721E412689C9100C094A0 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C721E312689C9100C094A0 /* SenTestingKit.framework */; };
+		43C721F612689DAE00C094A0 /* KSOutOfBandDataAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 43C721F312689D7B00C094A0 /* KSOutOfBandDataAction.m */; };
+		43C721F912689DD200C094A0 /* KSMultiUpdateAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F931F9F10E92B699009FB4B0 /* KSMultiUpdateAction.m */; };
 		F92468FF0E3164AA004ADF93 /* SignerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F92468FE0E316468004ADF93 /* SignerTest.m */; };
 		F924691D0E31689E004ADF93 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
 		F92469A80E316B5A004ADF93 /* SignedPlistServerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F92469A70E316B5A004ADF93 /* SignedPlistServerTest.m */; };
@@ -36,8 +41,6 @@
 		F93100160E92D465009FB4B0 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F95A05260E25328100A22FA6 /* CoreServices.framework */; };
 		F93100220E92D4FE009FB4B0 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F95A05210E25327300A22FA6 /* Carbon.framework */; };
 		F931005D0E92D7D3009FB4B0 /* EngineDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F954C0CD0E2D6C6400E776EB /* EngineDelegate.m */; };
-		F931005E0E92D7D3009FB4B0 /* GTMBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = F931FA590E92B699009FB4B0 /* GTMBase64.m */; };
-		F931005F0E92D7D3009FB4B0 /* GTMHTTPFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = F931FA6A0E92B699009FB4B0 /* GTMHTTPFetcher.m */; };
 		F93100600E92D7D3009FB4B0 /* GTMLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = F931FA730E92B699009FB4B0 /* GTMLogger.m */; };
 		F93100610E92D7D3009FB4B0 /* GTMLoggerRingBufferWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = F931FA750E92B699009FB4B0 /* GTMLoggerRingBufferWriter.m */; };
 		F93100620E92D7D3009FB4B0 /* GTMMethodCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F931FA550E92B699009FB4B0 /* GTMMethodCheck.m */; };
@@ -61,7 +64,6 @@
 		F93100740E92D7D3009FB4B0 /* KSMemoryTicketStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F931F9EC0E92B699009FB4B0 /* KSMemoryTicketStore.m */; };
 		F93100750E92D7D3009FB4B0 /* KSMockFetcherFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F931F9EF0E92B699009FB4B0 /* KSMockFetcherFactory.m */; };
 		F93100760E92D7D3009FB4B0 /* KSMultiAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F931F9C40E92B699009FB4B0 /* KSMultiAction.m */; };
-		F93100770E92D7D3009FB4B0 /* KSMultiUpdateAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F931F9F10E92B699009FB4B0 /* KSMultiUpdateAction.m */; };
 		F93100780E92D7D3009FB4B0 /* KSPlistServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F931F9F40E92B699009FB4B0 /* KSPlistServer.m */; };
 		F93100790E92D7D3009FB4B0 /* KSPrefetchAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F931F9F70E92B699009FB4B0 /* KSPrefetchAction.m */; };
 		F931007A0E92D7D3009FB4B0 /* KSPromptAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F931F9FA0E92B699009FB4B0 /* KSPromptAction.m */; };
@@ -127,6 +129,13 @@
 		08FB7796FE84155DC02AAC07 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32A70AAB03705E1F00C91783 /* autoinstaller_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = autoinstaller_Prefix.pch; sourceTree = "<group>"; };
+		43C7218D126897FB00C094A0 /* GTMBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GTMBase64.h; path = "../externals/google-toolbox-for-mac/Foundation/GTMBase64.h"; sourceTree = SOURCE_ROOT; };
+		43C7218E126897FB00C094A0 /* GTMBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GTMBase64.m; path = "../externals/google-toolbox-for-mac/Foundation/GTMBase64.m"; sourceTree = SOURCE_ROOT; };
+		43C721911268981E00C094A0 /* GTMHTTPFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GTMHTTPFetcher.h; path = "../externals/google-toolbox-for-mac/Foundation/GTMHTTPFetcher.h"; sourceTree = SOURCE_ROOT; };
+		43C721921268981E00C094A0 /* GTMHTTPFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GTMHTTPFetcher.m; path = "../externals/google-toolbox-for-mac/Foundation/GTMHTTPFetcher.m"; sourceTree = SOURCE_ROOT; };
+		43C721E312689C9100C094A0 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		43C721F212689D7B00C094A0 /* KSOutOfBandDataAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSOutOfBandDataAction.h; sourceTree = "<group>"; };
+		43C721F312689D7B00C094A0 /* KSOutOfBandDataAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSOutOfBandDataAction.m; sourceTree = "<group>"; };
 		F9041AE40E25397800886258 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		F92468F10E3163D1004ADF93 /* Extensions Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Extensions Tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F92468FB0E316468004ADF93 /* Signer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signer.h; sourceTree = "<group>"; };
@@ -211,11 +220,7 @@
 		F931FA530E92B699009FB4B0 /* GTMDebugSelectorValidation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDebugSelectorValidation.h; sourceTree = "<group>"; };
 		F931FA540E92B699009FB4B0 /* GTMMethodCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMMethodCheck.h; sourceTree = "<group>"; };
 		F931FA550E92B699009FB4B0 /* GTMMethodCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMMethodCheck.m; sourceTree = "<group>"; };
-		F931FA580E92B699009FB4B0 /* GTMBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMBase64.h; sourceTree = "<group>"; };
-		F931FA590E92B699009FB4B0 /* GTMBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMBase64.m; sourceTree = "<group>"; };
 		F931FA640E92B699009FB4B0 /* GTMGarbageCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMGarbageCollection.h; sourceTree = "<group>"; };
-		F931FA690E92B699009FB4B0 /* GTMHTTPFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMHTTPFetcher.h; sourceTree = "<group>"; };
-		F931FA6A0E92B699009FB4B0 /* GTMHTTPFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMHTTPFetcher.m; sourceTree = "<group>"; };
 		F931FA720E92B699009FB4B0 /* GTMLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMLogger.h; sourceTree = "<group>"; };
 		F931FA730E92B699009FB4B0 /* GTMLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMLogger.m; sourceTree = "<group>"; };
 		F931FA740E92B699009FB4B0 /* GTMLoggerRingBufferWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMLoggerRingBufferWriter.h; sourceTree = "<group>"; };
@@ -263,6 +268,7 @@
 				F93101490E92D9A5009FB4B0 /* Carbon.framework in Frameworks */,
 				F93101450E92D99D009FB4B0 /* CoreServices.framework in Frameworks */,
 				F924691D0E31689E004ADF93 /* Foundation.framework in Frameworks */,
+				43C721E412689C9100C094A0 /* SenTestingKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,6 +304,7 @@
 				F916621F0E26B54400E2806B /* Resources */,
 				08FB779DFE84155DC02AAC07 /* External Frameworks and Libraries */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
+				43C721E312689C9100C094A0 /* SenTestingKit.framework */,
 			);
 			name = autoinstaller;
 			sourceTree = "<group>";
@@ -404,6 +411,8 @@
 				F931F9EF0E92B699009FB4B0 /* KSMockFetcherFactory.m */,
 				F931F9F00E92B699009FB4B0 /* KSMultiUpdateAction.h */,
 				F931F9F10E92B699009FB4B0 /* KSMultiUpdateAction.m */,
+				43C721F212689D7B00C094A0 /* KSOutOfBandDataAction.h */,
+				43C721F312689D7B00C094A0 /* KSOutOfBandDataAction.m */,
 				F931F9F30E92B699009FB4B0 /* KSPlistServer.h */,
 				F931F9F40E92B699009FB4B0 /* KSPlistServer.m */,
 				F931F9F60E92B699009FB4B0 /* KSPrefetchAction.h */,
@@ -475,11 +484,11 @@
 		F931FA570E92B699009FB4B0 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
-				F931FA580E92B699009FB4B0 /* GTMBase64.h */,
-				F931FA590E92B699009FB4B0 /* GTMBase64.m */,
+				43C7218D126897FB00C094A0 /* GTMBase64.h */,
+				43C7218E126897FB00C094A0 /* GTMBase64.m */,
 				F931FA640E92B699009FB4B0 /* GTMGarbageCollection.h */,
-				F931FA690E92B699009FB4B0 /* GTMHTTPFetcher.h */,
-				F931FA6A0E92B699009FB4B0 /* GTMHTTPFetcher.m */,
+				43C721911268981E00C094A0 /* GTMHTTPFetcher.h */,
+				43C721921268981E00C094A0 /* GTMHTTPFetcher.m */,
 				F931FA720E92B699009FB4B0 /* GTMLogger.h */,
 				F931FA730E92B699009FB4B0 /* GTMLogger.m */,
 				F931FA740E92B699009FB4B0 /* GTMLoggerRingBufferWriter.h */,
@@ -621,7 +630,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "autoinstaller" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 08FB7794FE84155DC02AAC07 /* autoinstaller */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -698,8 +714,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F931005D0E92D7D3009FB4B0 /* EngineDelegate.m in Sources */,
-				F931005E0E92D7D3009FB4B0 /* GTMBase64.m in Sources */,
-				F931005F0E92D7D3009FB4B0 /* GTMHTTPFetcher.m in Sources */,
+				43C721DC12689B6100C094A0 /* GTMBase64.m in Sources */,
+				43C721971268987500C094A0 /* GTMHTTPFetcher.m in Sources */,
 				F93100600E92D7D3009FB4B0 /* GTMLogger.m in Sources */,
 				F93100610E92D7D3009FB4B0 /* GTMLoggerRingBufferWriter.m in Sources */,
 				F93100620E92D7D3009FB4B0 /* GTMMethodCheck.m in Sources */,
@@ -723,7 +739,8 @@
 				F93100740E92D7D3009FB4B0 /* KSMemoryTicketStore.m in Sources */,
 				F93100750E92D7D3009FB4B0 /* KSMockFetcherFactory.m in Sources */,
 				F93100760E92D7D3009FB4B0 /* KSMultiAction.m in Sources */,
-				F93100770E92D7D3009FB4B0 /* KSMultiUpdateAction.m in Sources */,
+				43C721F912689DD200C094A0 /* KSMultiUpdateAction.m in Sources */,
+				43C721F612689DAE00C094A0 /* KSOutOfBandDataAction.m in Sources */,
 				F93100780E92D7D3009FB4B0 /* KSPlistServer.m in Sources */,
 				F93100790E92D7D3009FB4B0 /* KSPrefetchAction.m in Sources */,
 				F931007A0E92D7D3009FB4B0 /* KSPromptAction.m in Sources */,
@@ -784,7 +801,12 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F931FBEC0E92B6F9009FB4B0 /* ReleaseTigerOrLater.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_PREFIX_HEADER = autoinstaller_Prefix.pch;
+				GCC_VERSION = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Release;
 		};
@@ -793,6 +815,10 @@
 			baseConfigurationReference = F931FBF40E92B6F9009FB4B0 /* DebugUnittest.xcconfig */;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
+				);
 				INFOPLIST_FILE = "Resources/Extensions Tests-Info.plist";
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -810,6 +836,10 @@
 			baseConfigurationReference = F931FBF60E92B6F9009FB4B0 /* ReleaseUnittest.xcconfig */;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
+				);
 				INFOPLIST_FILE = "Resources/Extensions Tests-Info.plist";
 				OTHER_LDFLAGS = (
 					"-framework",

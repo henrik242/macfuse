@@ -25,6 +25,12 @@ echo -n "Running postflight: "
 date
 echo ""
 
+# Because this MacFUSE package is an inofficial release do not use
+# autoinstaller to see if there is a newer MacFUSE Core. This would lead 
+# to the installation of the most recent official release, which is in fact 
+# older than this release at the moment.
+touch "$FORCE_EMBEDDED_FILE"
+
 # Determine this .pkg's receipt location.
 PACKAGE_NAME=$(basename "$PACKAGE_PATH")
 if [ -z "$PACKAGE_NAME" ]

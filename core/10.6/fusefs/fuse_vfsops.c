@@ -3,6 +3,11 @@
  * Amit Singh <singh@>
  */
 
+/*
+ * 'rebel' branch modifications:
+ *     Copyright (C) Tuxera 2010. All Rights Reserved.
+ */
+
 #include "fuse.h"
 #include "fuse_device.h"
 #include "fuse_internal.h"
@@ -61,20 +66,49 @@ static struct vnodeopv_desc *fuse_vnode_operation_vector_desc_list[] =
 #endif
 };
 
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
+
+static errno_t
+fuse_vfsop_biglock_root(mount_t mp, struct vnode **vpp, vfs_context_t context);
+
+static errno_t
+fuse_vfsop_biglock_getattr(mount_t mp, struct vfs_attr *attr, vfs_context_t context);
+
+static errno_t
+fuse_vfsop_biglock_sync(mount_t mp, int waitfor, vfs_context_t context);
+
+static errno_t
+fuse_vfsop_biglock_setattr(mount_t mp, struct vfs_attr *fsap, vfs_context_t context);
+
+#endif
+
 static struct vfsops fuse_vfs_ops = {
-    fuse_vfsop_mount,   // vfs_mount
-    NULL,               // vfs_start
-    fuse_vfsop_unmount, // vfs_unmount
-    fuse_vfsop_root,    // vfs_root
-    NULL,               // vfs_quotactl
-    fuse_vfsop_getattr, // vfs_getattr
-    fuse_vfsop_sync,    // vfs_sync
-    NULL,               // vfs_vget
-    NULL,               // vfs_fhtovp
-    NULL,               // vfs_vptofh
-    NULL,               // vfs_init
-    NULL,               // vfs_sysctl
-    fuse_vfsop_setattr, // vfs_setattr
+    fuse_vfsop_mount,           // vfs_mount
+    NULL,                       // vfs_start
+    fuse_vfsop_unmount,         // vfs_unmount
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
+    fuse_vfsop_biglock_root,    // vfs_root
+    NULL,                       // vfs_quotactl
+    fuse_vfsop_biglock_getattr, // vfs_getattr
+    fuse_vfsop_biglock_sync,    // vfs_sync
+    NULL,                       // vfs_vget
+    NULL,                       // vfs_fhtovp
+    NULL,                       // vfs_vptofh
+    NULL,                       // vfs_init
+    NULL,                       // vfs_sysctl
+    fuse_vfsop_biglock_setattr, // vfs_setattr
+#else	
+    fuse_vfsop_root,            // vfs_root
+    NULL,                       // vfs_quotactl
+    fuse_vfsop_getattr,         // vfs_getattr
+    fuse_vfsop_sync,            // vfs_sync
+    NULL,                       // vfs_vget
+    NULL,                       // vfs_fhtovp
+    NULL,                       // vfs_vptofh
+    NULL,                       // vfs_init
+    NULL,                       // vfs_sysctl
+    fuse_vfsop_setattr,         // vfs_setattr
+#endif
     { NULL, NULL, NULL, NULL, NULL, NULL, NULL } // vfs_reserved[]
 };
 
@@ -745,7 +779,7 @@ handle_capabilities_and_attributes(mount_t mp, struct vfs_attr *attr)
         | VOL_CAP_INT_ATTRLIST
 //      | VOL_CAP_INT_NFSEXPORT
 //      | VOL_CAP_INT_READDIRATTR
-        | VOL_CAP_INT_EXCHANGEDATA
+//      | VOL_CAP_INT_EXCHANGEDATA
 //      | VOL_CAP_INT_COPYFILE
 //      | VOL_CAP_INT_ALLOCATE
 //      | VOL_CAP_INT_VOL_RENAME
@@ -761,6 +795,13 @@ handle_capabilities_and_attributes(mount_t mp, struct vfs_attr *attr)
     if (data->dataflags & FSESS_NATIVE_XATTR) {
         attr->f_capabilities.capabilities[VOL_CAPABILITIES_INTERFACES] |=
             VOL_CAP_INT_EXTENDED_ATTR;
+    }
+
+    /* Don't set the EXCHANGEDATA capability if it's known not to be
+     * implemented in the FUSE daemon. */
+    if (fuse_implemented(data, FSESS_NOIMPLBIT(EXCHANGE))) {
+        attr->f_capabilities.capabilities[VOL_CAPABILITIES_INTERFACES] |=
+		VOL_CAP_INT_EXCHANGEDATA;
     }
 
     attr->f_capabilities.valid[VOL_CAPABILITIES_INTERFACES] = 0
@@ -1282,3 +1323,129 @@ fuse_setextendedsecurity(mount_t mp, int state)
 
     return err;
 }
+
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
+
+#if M_MACFUSE_ENABLE_LOCK_LOGGING
+  #define rawlog(msg, args...) IOLog(msg, ##args)
+
+  #define log(fmt, args...) \
+    do { \
+      lck_mtx_lock(fuse_log_lock); \
+      rawlog(fmt, ##args); \
+      rawlog("\n"); \
+      lck_mtx_unlock(fuse_log_lock); \
+    } while(0)
+
+  #define log_enter(params_format, args...) \
+    do { \
+      lck_mtx_lock(fuse_log_lock); \
+      rawlog("[%s:%d] Entering %s: ", __FILE__, __LINE__, __FUNCTION__); \
+      rawlog(params_format, ##args); \
+      rawlog("\n"); \
+      lck_mtx_unlock(fuse_log_lock); \
+    } while(0)
+
+  #define log_leave(return_format, args...) \
+    do { \
+      lck_mtx_lock(fuse_log_lock); \
+      rawlog("[%s:%d] Leaving %s: ", __FILE__, __LINE__, __FUNCTION__); \
+      rawlog(return_format, ##args); \
+      rawlog("\n"); \
+      lck_mtx_unlock(fuse_log_lock); \
+	} while(0)
+#else
+  #define log(fmt, args...) do {} while(0)
+  #define log_enter(params_format, args...) do {} while(0)
+  #define log_leave(return_format, args...) do {} while(0)
+#endif /* M_MACFUSE_ENABLE_LOCK_LOGGING */
+
+#if M_MACFUSE_ENABLE_HUGE_LOCK
+  #define _fuse_biglock_lock_real(lock) \
+    fusefs_recursive_lock_lock(fuse_huge_lock)
+  #define _fuse_biglock_unlock_real(lock) \
+    fusefs_recursive_lock_unlock(fuse_huge_lock)
+  #define fuse_biglock_t __unused fusefs_recursive_lock
+#else
+  #define _fuse_biglock_lock_real(lock) \
+    fusefs_recursive_lock_lock(lock)
+  #define _fuse_biglock_unlock_real(lock) \
+    fusefs_recursive_lock_unlock(lock)
+  #define fuse_biglock_t fusefs_recursive_lock
+#endif
+
+#define fuse_biglock_lock(lock) \
+  do { \
+    log("(%p) %s: Aquiring biglock...", lock, __FUNCTION__); \
+	_fuse_biglock_lock_real(lock); \
+    log("(%p) %s:   biglock aquired!", lock, __FUNCTION__); \
+  } while(0)
+
+#define fuse_biglock_unlock(lock) \
+  do { \
+    log("(%p) %s: Releasing biglock...", lock, __FUNCTION__); \
+    _fuse_biglock_unlock_real(lock); \
+    log("(%p) %s:   biglock released!", lock, __FUNCTION__); \
+  } while(0)
+
+static errno_t
+fuse_vfsop_biglock_root(mount_t mp, struct vnode **vpp, vfs_context_t context)
+{
+    errno_t res;
+#if !M_MACFUSE_ENABLE_HUGE_LOCK
+    fuse_biglock_t *biglock = fuse_get_mpdata(mp)->biglock;
+#endif
+	
+    fuse_biglock_lock(biglock);
+    res = fuse_vfsop_root(mp, vpp, context);
+    fuse_biglock_unlock(biglock);
+	
+    return res;
+}
+
+static errno_t
+fuse_vfsop_biglock_getattr(mount_t mp, struct vfs_attr *attr, vfs_context_t context)
+{
+    errno_t res;
+#if !M_MACFUSE_ENABLE_HUGE_LOCK
+    fuse_biglock_t *biglock = fuse_get_mpdata(mp)->biglock;
+#endif
+	
+    fuse_biglock_lock(biglock);
+    res = fuse_vfsop_getattr(mp, attr, context);
+    fuse_biglock_unlock(biglock);
+	
+    return res;
+}
+
+static errno_t
+fuse_vfsop_biglock_sync(mount_t mp, int waitfor, vfs_context_t context)
+{
+    errno_t res;
+#if !M_MACFUSE_ENABLE_HUGE_LOCK
+    fuse_biglock_t *biglock = fuse_get_mpdata(mp)->biglock;
+#endif
+	
+    fuse_biglock_lock(biglock);
+    res = fuse_vfsop_sync(mp, waitfor, context);
+    fuse_biglock_unlock(biglock);
+	
+    return res;
+}
+
+static errno_t
+fuse_vfsop_biglock_setattr(mount_t mp, struct vfs_attr *fsap, vfs_context_t context)
+{
+    errno_t res;
+#if !M_MACFUSE_ENABLE_HUGE_LOCK
+    fuse_biglock_t *biglock = fuse_get_mpdata(mp)->biglock;
+#endif
+	
+    fuse_biglock_lock(biglock);
+    res = fuse_vfsop_setattr(mp, fsap, context);
+    fuse_biglock_unlock(biglock);
+	
+    return res;
+}
+
+#endif

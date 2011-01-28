@@ -15,7 +15,7 @@ export PATH
 #         Therefore, do not set M_CONF_TMPDIR to such a directory.
 #
 readonly M_CONF_TMPDIR=/tmp
-readonly M_CONF_PRIVKEY=/etc/macfuse/private.der
+readonly M_CONF_PRIVKEY=private_key.der
 
 # Other constants
 #
@@ -26,8 +26,8 @@ readonly M_PROGVERS=1.0
 readonly M_DEFAULT_VALUE=__default__
 
 readonly M_CONFIGURATIONS="Debug Release" # default is Release
-readonly M_PLATFORMS="10.4 10.5 10.6"     # default is native
-readonly M_PLATFORMS_REALISTIC="10.4 10.5"
+readonly M_PLATFORMS="10.6"               # default is native
+readonly M_PLATFORMS_REALISTIC="10.6"
 readonly M_TARGETS="clean dist examples lib libsrc reload smalldist swconfigure"
 readonly M_TARGETS_WITH_PLATFORM="examples lib libsrc smalldist swconfigure"
 
@@ -208,10 +208,10 @@ function m_set_platform()
     fi
 
     # XXX For now
-    if [ "$m_platform" == "10.6" ]
-    then
-        m_platform="10.5"
-    fi
+#   if [ "$m_platform" == "10.6" ]
+#   then
+#       m_platform="10.5"
+#   fi
 
     case "$m_platform" in
     10.4*)
@@ -847,10 +847,10 @@ function m_handler_dist()
 
     # XXX For now, make 10.5 also valid for 10.6
     #
-    if [ -d "$md_install_resources/10.5" ]
-    then
-        ln -s "10.5" "$md_install_resources/10.6"
-    fi
+#   if [ -d "$md_install_resources/10.5" ]
+#   then
+#       ln -s "10.5" "$md_install_resources/10.6"
+#   fi
 
     # Throw in the autoinstaller
     #

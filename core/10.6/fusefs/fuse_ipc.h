@@ -3,6 +3,11 @@
  * Amit Singh <singh@>
  */
 
+/*
+ * 'rebel' branch modifications:
+ *     Copyright (C) Tuxera 2010. All Rights Reserved.
+ */
+
 #ifndef _FUSE_IPC_H_
 #define _FUSE_IPC_H_
 
@@ -23,6 +28,10 @@
 #include <libkern/libkern.h>
 #include <libkern/OSMalloc.h>
 #include <libkern/locks.h>
+
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
+  #include <IOKit/IOLocks.h>
+#endif
 
 #include "fuse.h"
 #include "fuse_device.h"
@@ -189,6 +198,13 @@ struct fuse_data {
     struct timespec            daemon_timeout;
     struct timespec           *daemon_timeout_p;
     struct timespec            init_timeout;
+
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
+  #if !M_MACFUSE_ENABLE_HUGE_LOCK
+    fusefs_recursive_lock     *biglock;
+  #endif /* !M_MACFUSE_ENABLE_HUGE_LOCK */
+#endif /* M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK */
+	
 };
 
 enum {

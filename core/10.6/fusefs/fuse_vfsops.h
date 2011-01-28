@@ -3,6 +3,11 @@
  * Amit Singh <singh@>
  */
 
+/*
+ * 'rebel' branch modifications:
+ *     Copyright (C) Tuxera 2010. All Rights Reserved.
+ */
+
 #ifndef _FUSE_VFSOPS_H_
 #define _FUSE_VFSOPS_H_
 
@@ -17,7 +22,11 @@
 struct fuse_data;
 struct fuse_ticket;
 
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
+extern struct vnodeopv_entry_desc fuse_biglock_vnode_operation_entries[];
+#else
 extern struct vnodeopv_entry_desc fuse_vnode_operation_entries[];
+#endif
 
 #if M_MACFUSE_ENABLE_SPECFS
 extern struct vnodeopv_entry_desc fuse_spec_operation_entries[];

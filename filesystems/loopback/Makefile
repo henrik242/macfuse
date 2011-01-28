@@ -3,7 +3,7 @@ TARGETS = loopback
 CC = gcc
 CFLAGS_MACFUSE = -D__FreeBSD__=10 -D_FILE_OFFSET_BITS=64 -I/usr/local/include/fuse
 CFLAGS_EXTRA = -Wall -g -D__DARWIN_64_BIT_INO_T=1
-ARCHS = -arch i386 -arch ppc
+ARCHS = -arch i386 -arch x86_64
 LIBS = -lfuse_ino64
 
 .c:

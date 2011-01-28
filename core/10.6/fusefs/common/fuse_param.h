@@ -3,6 +3,11 @@
  * Amit Singh <singh@>
  */
 
+/*
+ * 'rebel' branch modifications:
+ *     Copyright (C) Tuxera 2010. All Rights Reserved.
+ */
+
 #ifndef _FUSE_PARAM_H_
 #define _FUSE_PARAM_H_
 
@@ -26,9 +31,11 @@
 #endif /* M_MACFUSE_ENABLE_UNSUPPORTED */
 
 #if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
-#define FUSE_VNOP_EXPORT __private_extern__
+  #define M_MACFUSE_ENABLE_HUGE_LOCK 1
+  #define M_MACFUSE_ENABLE_LOCK_LOGGING 0
+  #define FUSE_VNOP_EXPORT __private_extern__
 #else
-#define FUSE_VNOP_EXPORT static
+  #define FUSE_VNOP_EXPORT static
 #endif /* M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK */
 
 /* User Control */
@@ -131,13 +138,13 @@
 /* User-Kernel IPC Buffer */
 
 #define FUSE_MIN_USERKERNEL_BUFSIZE        (128  * 1024)
-#define FUSE_MAX_USERKERNEL_BUFSIZE        (4096 * 1024)
+#define FUSE_MAX_USERKERNEL_BUFSIZE        (16   * 1024 * 1024)
 
 #define FUSE_REASONABLE_XATTRSIZE          FUSE_MIN_USERKERNEL_BUFSIZE
 
 #endif /* KERNEL */
 
-#define FUSE_DEFAULT_USERKERNEL_BUFSIZE    (4096 * 1024)
+#define FUSE_DEFAULT_USERKERNEL_BUFSIZE    (16   * 1024 * 1024)
 
 #define FUSE_LINK_MAX                      LINK_MAX
 #define FUSE_UIO_BACKUP_MAX                8

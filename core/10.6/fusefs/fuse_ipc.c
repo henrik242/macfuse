@@ -3,6 +3,11 @@
  * Amit Singh <singh@>
  */
 
+/*
+ * 'rebel' branch modifications:
+ *     Copyright (C) Tuxera 2010. All Rights Reserved.
+ */
+
 #include <sys/types.h>
 #include <sys/malloc.h>
 
@@ -430,6 +435,12 @@ fdata_alloc(struct proc *p)
     data->timeout_status = FUSE_DAEMON_TIMEOUT_NONE;
     data->timeout_mtx    = lck_mtx_alloc_init(fuse_lock_group, fuse_lock_attr);
 
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
+  #if !M_MACFUSE_ENABLE_HUGE_LOCK
+    data->biglock        = fusefs_recursive_lock_alloc();
+  #endif /* !M_MACFUSE_ENABLE_HUGE_LOCK */
+#endif /* M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK */
+
     return data;
 }
 
@@ -454,6 +465,12 @@ fdata_destroy(struct fuse_data *data)
 
     data->timeout_status = FUSE_DAEMON_TIMEOUT_NONE;
     lck_mtx_free(data->timeout_mtx, fuse_lock_group);
+
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
+  #if !M_MACFUSE_ENABLE_HUGE_LOCK
+    fusefs_recursive_lock_free(data->biglock);
+  #endif /* !M_MACFUSE_ENABLE_HUGE_LOCK */
+#endif /* M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK */
 
     while ((ftick = fuse_pop_allticks(data))) {
         fticket_destroy(ftick);
