@@ -1,0 +1,24 @@
+As posted on https://groups.google.com/group/macfuse/msg/00ad2b89e32cbde9:
+
+It's been difficult to follow all the third party development done on
+MacFuse.  I propose we all use github to share our code, this way it
+will be easier to share patches, view diffs, and we won't be burdened
+by a central repository which is never updated.
+
+I have cloned the main repository from https://code.google.com/p/macfuse/source/checkout
+to https://github.com/henrik242/macfuse .
+
+I have added two branches:
+
+* "macfuse-2.1.9-rebel" has the source code from
+http://www.tuxera.com/mac/macfuse-rebel-2.1.9-src.tar.bz2 provided by
+Erik Larsson on https://groups.google.com/group/macfuse/msg/08b51b5bb0744358
+.
+
+* "macfuse-2.1.7-fleischer" has the source code from
+http://www.mediafire.com/?ila2aj952pkypuo provided by Benjamin
+Fleischer on https://groups.google.com/group/macfuse/msg/b1e3b98fd491b8e6
+
+Feel free to fork at will.   I have not done any development on
+MacFuse myself, so I won't be able to help with bugs and features.  At
+least not yet :) 
