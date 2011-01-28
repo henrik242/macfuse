@@ -167,7 +167,7 @@
 		54C6DDCC0B5EEB44002D9FD9 /* fuse_vnops.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = fuse_vnops.c; sourceTree = "<group>"; };
 		54C6DDCD0B5EEB44002D9FD9 /* fuse_vnops.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = fuse_vnops.h; sourceTree = "<group>"; };
 		54C6DDD50B5EEB44002D9FD9 /* fusefs.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = fusefs.xcodeproj; sourceTree = "<group>"; };
-		54C6DDD80B5EEB44002D9FD9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		54C6DDD80B5EEB44002D9FD9 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 30; path = Info.plist; sourceTree = "<group>"; };
 		54F862610B8029A400416A6F /* fuse_kludges.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = fuse_kludges.c; sourceTree = "<group>"; };
 		54F862620B8029A400416A6F /* fuse_kludges.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = fuse_kludges.h; sourceTree = "<group>"; };
 		D27513B306A6225300ADB3A4 /* Kernel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kernel.framework; path = /System/Library/Frameworks/Kernel.framework; sourceTree = "<absolute>"; };
@@ -413,7 +413,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 1DEB91C708733DAC0010E9CD /* Build configuration list for PBXProject "fusefs" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 089C166AFE841209C02AAC07 /* fusefs */;
 			productRefGroup = 540966F20C33BEC900F5E227 /* Products */;
 			projectDirPath = "";
@@ -465,8 +472,8 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/bin/cpp -DMACFUSE_BUILD_FLAVOR=\"$MACFUSE_BUILD_FLAVOR\" -I\"$SRCROOT\" -P \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist | $SED -e '/^$/d' > \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist.new\n/bin/mv \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist.new \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist\n/usr/bin/cpp -I\"$SRCROOT\" -P \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist | $SED -e '/^$/d' > \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist.new\n/bin/mv \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist.new \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist";
+			shellPath = "/bin/sh -x";
+			shellScript = "/usr/bin/gcc -E -x assembler-with-cpp -Wno-trigraphs \"-DMACFUSE_BUILD_FLAVOR=${MACFUSE_BUILD_FLAVOR}\" \"-I${SRCROOT}\" -P \"${BUILT_PRODUCTS_DIR}/${TARGET_NAME}/Contents/Info.plist\" | $SED -e '/^$/d' > \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist.new\n/bin/mv \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist.new \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist\n/usr/bin/gcc -E -x assembler-with-cpp -Wno-trigraphs -I\"$SRCROOT\" -P \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist | $SED -e '/^$/d' > \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist.new\n/bin/mv \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist.new \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -556,9 +563,9 @@
 					ppc,
 				);
 				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
@@ -618,10 +625,10 @@
 					ppc,
 				);
 				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = YES;
 				EXPORTED_SYMBOLS_FILE = MacFUSE.exports;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_NONCONFORMANT_CODE_ERRORS_AS_WARNINGS = YES;
@@ -698,7 +705,7 @@
 					i386,
 					ppc,
 				);
-				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -707,7 +714,7 @@
 				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
-				STRIP_INSTALLED_PRODUCT = NO;
+				SEPARATE_STRIP = YES;
 			};
 			name = Release;
 		};

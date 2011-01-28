@@ -1,4 +1,9 @@
 /*
+ * 'rebel' branch modifications:
+ *     Copyright (C) 2010 Tuxera. All Rights Reserved.
+ */
+
+/*
  * Copyright (C) 2006-2008 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
@@ -11,7 +16,7 @@
 #define M_MACFUSE_ENABLE_FIFOFS            0
 #define M_MACFUSE_ENABLE_INTERRUPT         1
 #define M_MACFUSE_ENABLE_SPECFS            0
-#define M_MACFUSE_ENABLE_TSLOCKING         0
+#define M_MACFUSE_ENABLE_TSLOCKING         1
 #define M_MACFUSE_ENABLE_UNSUPPORTED       1
 #define M_MACFUSE_ENABLE_XATTR             1
 
@@ -20,12 +25,14 @@
   #define M_MACFUSE_ENABLE_EXCHANGE        1
   #define M_MACFUSE_ENABLE_KQUEUE          1
   #define M_MACFUSE_ENABLE_KUNC            0
-#if __LP64__
+#if __LP64__ || 1
     #define M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK 1
 #endif /* __LP64__ */
 #endif /* M_MACFUSE_ENABLE_UNSUPPORTED */
 
 #if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
+#define M_MACFUSE_ENABLE_HUGE_LOCK 0
+#define M_MACFUSE_ENABLE_LOCK_LOGGING 1
 #define FUSE_VNOP_EXPORT __private_extern__
 #else
 #define FUSE_VNOP_EXPORT static
@@ -131,13 +138,13 @@
 /* User-Kernel IPC Buffer */
 
 #define FUSE_MIN_USERKERNEL_BUFSIZE        (128  * 1024)
-#define FUSE_MAX_USERKERNEL_BUFSIZE        (4096 * 1024)
+#define FUSE_MAX_USERKERNEL_BUFSIZE        (16   * 1024 * 1024)
 
 #define FUSE_REASONABLE_XATTRSIZE          FUSE_MIN_USERKERNEL_BUFSIZE
 
 #endif /* KERNEL */
 
-#define FUSE_DEFAULT_USERKERNEL_BUFSIZE    (4096 * 1024)
+#define FUSE_DEFAULT_USERKERNEL_BUFSIZE    (16   * 1024 * 1024)
 
 #define FUSE_LINK_MAX                      LINK_MAX
 #define FUSE_UIO_BACKUP_MAX                8

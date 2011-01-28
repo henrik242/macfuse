@@ -1,4 +1,9 @@
 /*
+ * 'rebel' branch modifications:
+ *     Copyright (C) 2010 Tuxera. All Rights Reserved.
+ */
+
+/*
  * Copyright (C) 2006-2008 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
@@ -383,6 +388,7 @@ fuse_skip_apple_double_mp(mount_t mp, char *nameptr, long namelen)
             }
         }
     }
+#undef DS_STORE
 
     return 0;
 }

@@ -1,4 +1,9 @@
 /*
+ * 'rebel' branch modifications:
+ *     Copyright (C) 2010 Tuxera. All Rights Reserved.
+ */
+
+/*
  * Copyright (C) 2006-2008 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
@@ -23,6 +28,10 @@
 #include <libkern/libkern.h>
 #include <libkern/OSMalloc.h>
 #include <libkern/locks.h>
+
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
+#include <IOKit/IOlocks.h>
+#endif
 
 #include "fuse.h"
 #include "fuse_device.h"
@@ -189,6 +198,11 @@ struct fuse_data {
     struct timespec            daemon_timeout;
     struct timespec           *daemon_timeout_p;
     struct timespec            init_timeout;
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
+#if !M_MACFUSE_ENABLE_HUGE_LOCK
+    lck_mtx_t                 *biglock;
+#endif /* !M_MACFUSE_ENABLE_HUGE_LOCK */
+#endif /* M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK */
 };
 
 enum {

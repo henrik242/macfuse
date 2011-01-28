@@ -1,4 +1,9 @@
 /*
+ * 'rebel' branch modifications:
+ *     Copyright (C) 2010 Tuxera. All Rights Reserved.
+ */
+
+/*
  * Copyright (C) 2006-2008 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
@@ -32,6 +37,8 @@ lck_grp_t      *fuse_lock_group   = NULL;
 lck_mtx_t      *fuse_device_mutex = NULL;
 
 #if M_MACFUSE_ENABLE_TSLOCKING
+
+#include <sys/ubc.h>
 
 /*
  * Largely identical to HFS+ locking. Much of the code is from hfs_cnode.c.
@@ -350,3 +357,189 @@ fusefs_lck_rw_done(lck_rw_t *lock)
 {
     IORWLockUnlock((IORWLock *)lock);
 }
+
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
+
+/* Recursive lock used to lock the vfs functions awaiting more fine-grained
+ * locking. Code was taken from IOLocks.cpp to imitate how an IORecursiveLock
+ * behaves. */
+
+struct _fusefs_recursive_lock {
+    lck_mtx_t *mutex;
+    lck_grp_t *group;
+    thread_t thread;
+    UInt32 count;
+};
+
+static fusefs_recursive_lock* fusefs_recursive_lock_alloc_with_lock_group(
+        lck_grp_t *lock_group)
+{
+    struct _fusefs_recursive_lock *lock;
+
+    if (lock_group == NULL)
+        return 0;
+
+    lock = (struct _fusefs_recursive_lock*) FUSE_OSMalloc(
+        sizeof(struct _fusefs_recursive_lock), fuse_malloc_tag);
+    if (!lock)
+        return NULL;
+
+    lock->mutex = lck_mtx_alloc_init(lock_group, LCK_ATTR_NULL);
+    if (lock->mutex) {
+        lock->group = lock_group;
+        lock->thread = 0;
+        lock->count = 0;
+    } else {
+        FUSE_OSFree(lock, sizeof(struct _fusefs_recursive_lock),
+            fuse_malloc_tag);
+        lock = 0;
+    }
+
+    return (fusefs_recursive_lock*) lock;
+}
+
+
+fusefs_recursive_lock* fusefs_recursive_lock_alloc(void)
+{
+    return fusefs_recursive_lock_alloc_with_lock_group(fuse_lock_group);
+}
+
+void fusefs_recursive_lock_free(fusefs_recursive_lock* lock)
+{
+    lck_mtx_free(lock->mutex, lock->group);
+    FUSE_OSFree(lock, sizeof(fusefs_recursive_lock), fuse_malloc_tag);
+}
+
+/* Currently not exported in header as we don't use it anywhere. */
+#if 0
+lck_mtx_t* fusefs_recursive_lock_get_mach_lock(fusefs_recursive_lock* lock)
+{
+    return lock->mutex;
+}
+#endif
+
+void fusefs_recursive_lock_lock(fusefs_recursive_lock *lock)
+{
+    if (lock->thread == current_thread())
+        lock->count++;
+    else {
+        lck_mtx_lock(lock->mutex);
+        assert(lock->thread == 0);
+        assert(lock->count == 0);
+        lock->thread = current_thread();
+        lock->count = 1;
+    }
+}
+
+/* Currently not exported in header as we don't use it anywhere. */
+/* Can't find lck_mtx_try_lock in headers, so this function can't compile. */
+#if 0
+boolean_t fusefs_recursive_lock_try_lock(fusefs_recursive_lock *lock)
+{
+    if (lock->thread == current_thread()) {
+        lock->count++;
+        return true;
+    } else {
+        if (lck_mtx_try_lock(lock->mutex)) {
+            assert(lock->thread == 0);
+            assert(lock->count == 0);
+            lock->thread = current_thread();
+            lock->count = 1;
+            return true;
+	    }
+    }
+    return false;
+}
+#endif
+
+void fusefs_recursive_lock_unlock(fusefs_recursive_lock *lock)
+{
+    assert(lock->thread == current_thread());
+
+    if(lock->count == 0)
+        panic("Attempted to unlock non-locked recursive lock.");
+
+    if (0 == (--lock->count)) {
+        lock->thread = 0;
+        lck_mtx_unlock(lock->mutex);
+    }
+}
+
+/* Currently not exported in header as we don't use it anywhere. */
+#if 0
+boolean_t fusefs_recursive_lock_have_lock(fusefs_recursive_lock *lock)
+{
+    return lock->thread == current_thread();
+}
+#endif
+
+/* Currently not exported in header as we don't use it anywhere. */
+#if 0
+int fusefs_recursive_lock_sleep(fusefs_recursive_lock *lock,
+        void *event, UInt32 interType)
+{
+    UInt32 count = lock->count;
+    int res;
+
+    assert(lock->thread == current_thread());
+
+    lock->count = 0;
+    lock->thread = 0;
+    res = lck_mtx_sleep(lock->mutex, LCK_SLEEP_DEFAULT, (event_t) event,
+        (wait_interrupt_t) interType);
+
+    // Must re-establish the recursive lock no matter why we woke up
+    // otherwise we would potentially leave the return path corrupted.
+    assert(lock->thread == 0);
+    assert(lock->count == 0);
+    lock->thread = current_thread();
+    lock->count = count;
+    return res;
+}
+#endif
+
+/* Currently not exported in header as we don't use it anywhere. */
+/* __OSAbsoluteTime is KERNEL_PRIVATE, so this function can't compile. */
+#if 0
+int fusefs_recursive_lock_sleep_deadline(fusefs_recursive_lock *lock,
+        void *event, AbsoluteTime deadline, UInt32 interType)
+{
+    UInt32 count = lock->count;
+    int res;
+
+    assert(lock->thread == current_thread());
+
+    lock->count = 0;
+    lock->thread = 0;
+    res = lck_mtx_sleep_deadline(lock->mutex, LCK_SLEEP_DEFAULT,
+        (event_t) event, (wait_interrupt_t) interType,
+        __OSAbsoluteTime(deadline));
+
+    // Must re-establish the recursive lock no matter why we woke up
+    // otherwise we would potentially leave the return path corrupted.
+    assert(lock->thread == 0);
+    assert(lock->count == 0);
+    lock->thread = current_thread();
+    lock->count = count;
+    return res;
+}
+#endif
+
+/* Currently not exported in header as we don't use it anywhere. */
+#if 0
+void fusefs_recursive_lock_wakeup(__unused fusefs_recursive_lock *lock,
+        void *event, bool oneThread)
+{
+    thread_wakeup_prim((event_t) event, oneThread, THREAD_AWAKENED);
+}
+#endif
+
+#if M_MACFUSE_ENABLE_LOCK_LOGGING
+lck_mtx_t *fuse_log_lock = NULL;
+#endif /* M_MACFUSE_ENABLE_LOCK_LOGGING */
+
+#if M_MACFUSE_ENABLE_HUGE_LOCK
+fusefs_recursive_lock *fuse_huge_lock = NULL;
+#endif /* M_MACFUSE_ENABLE_HUGE_LOCK */
+
+#endif /* M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK */

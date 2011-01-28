@@ -1,4 +1,9 @@
 /*
+ * 'rebel' branch modifications:
+ *     Copyright (C) 2010 Tuxera. All Rights Reserved.
+ */
+
+/*
  * Copyright (C) 2006-2008 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
@@ -36,6 +41,10 @@
 #include "fuse_nodehash.h"
 #include "fuse_sysctl.h"
 #include "fuse_kludges.h"
+
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
+#include "fuse_biglock_vnops.h"
+#endif
 
 /* access */
 
@@ -171,7 +180,13 @@ fuse_internal_access(vnode_t                   vp,
          * unless I use REVOKE_NONE here.
          */
          
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
+        fuse_biglock_unlock(data->biglock);
+#endif
         fuse_internal_vnode_disappear(vp, context, REVOKE_SOFT);
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
+        fuse_biglock_lock(data->biglock);
+#endif
     }
 
     return err;
@@ -886,8 +901,15 @@ fuse_internal_remove(vnode_t               dvp,
      */
     if (need_invalidate && !err) {
         if (!vfs_busy(mp, LK_NOWAIT)) {
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
+            struct fuse_data *data = fuse_get_mpdata(mp);
+            fuse_biglock_unlock(data->biglock);
+#endif
             vnode_iterate(mp, 0, fuse_internal_remove_callback,
                           (void *)&target_nlink);
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
+            fuse_biglock_lock(data->biglock);
+#endif
             vfs_unbusy(mp);
         } else {
             IOLog("MacFUSE: skipping link count fixup upon remove\n");
@@ -1506,9 +1528,23 @@ fuse_internal_vnode_disappear(vnode_t vp, vfs_context_t context, int how)
             IOLog("MacFUSE: disappearing act: revoke failed (%d)\n", err);
         }
 
-        err = vnode_recycle(vp);
-        if (err) {
-            IOLog("MacFUSE: disappearing act: recycle failed (%d)\n", err);
+        /* Checking whether the vnode is in the process of being recycled
+         * to avoid the 'vnode reclaim in progress' kernel panic.
+         *
+         * Obviously this is a quick fix done without much understanding of
+         * the code flow of a recycle operation, but it seems that we
+         * shouldn't call this again if a recycle operation was the reason
+         * that we got here.
+         */
+        if(!vnode_isrecycled(vp)) {
+            err = vnode_recycle(vp);
+            if (err) {
+                IOLog("MacFUSE: disappearing act: recycle failed (%d)\n", err);
+            }
+        }
+        else {
+                IOLog("MacFUSE: Avoided 'vnode reclaim in progress' kernel "
+                        "panic. What now?\n");
         }
     }
 }

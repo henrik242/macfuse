@@ -1,4 +1,9 @@
 /*
+ * 'rebel' branch modifications:
+ *     Copyright (C) 2010 Tuxera. All Rights Reserved.
+ */
+
+/*
  * Copyright (C) 2006-2008 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
@@ -430,6 +435,12 @@ fdata_alloc(struct proc *p)
     data->timeout_status = FUSE_DAEMON_TIMEOUT_NONE;
     data->timeout_mtx    = lck_mtx_alloc_init(fuse_lock_group, fuse_lock_attr);
 
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
+#if !M_MACFUSE_ENABLE_HUGE_LOCK
+    data->biglock        = lck_mtx_alloc_init(fuse_lock_group, fuse_lock_attr);
+#endif /* !M_MACFUSE_ENABLE_HUGE_LOCK */
+#endif /* M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK */
+
     return data;
 }
 
@@ -454,6 +465,13 @@ fdata_destroy(struct fuse_data *data)
 
     data->timeout_status = FUSE_DAEMON_TIMEOUT_NONE;
     lck_mtx_free(data->timeout_mtx, fuse_lock_group);
+
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
+#if !M_MACFUSE_ENABLE_HUGE_LOCK
+    lck_mtx_free(data->biglock, fuse_lock_group);
+    data->biglock = NULL;
+#endif /* !M_MACFUSE_ENABLE_HUGE_LOCK */
+#endif /* M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK */
 
     while ((ftick = fuse_pop_allticks(data))) {
         fticket_destroy(ftick);

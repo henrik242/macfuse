@@ -1,4 +1,9 @@
 /*
+ * 'rebel' branch modifications:
+ *     Copyright (C) 2010 Tuxera. All Rights Reserved.
+ */
+
+/*
  * Copyright (C) 2006-2008 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
@@ -123,13 +128,13 @@
 /* User-Kernel IPC Buffer */
 
 #define FUSE_MIN_USERKERNEL_BUFSIZE        (128  * 1024)
-#define FUSE_MAX_USERKERNEL_BUFSIZE        (4096 * 1024)
+#define FUSE_MAX_USERKERNEL_BUFSIZE        (16   * 1024 * 1024)
 
 #define FUSE_REASONABLE_XATTRSIZE          FUSE_MIN_USERKERNEL_BUFSIZE
 
 #endif /* KERNEL */
 
-#define FUSE_DEFAULT_USERKERNEL_BUFSIZE    (4096 * 1024)
+#define FUSE_DEFAULT_USERKERNEL_BUFSIZE    (16   * 1024 * 1024)
 
 #define FUSE_LINK_MAX                      LINK_MAX
 #define FUSE_UIO_BACKUP_MAX                8

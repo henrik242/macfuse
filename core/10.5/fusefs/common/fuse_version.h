@@ -1,4 +1,9 @@
 /*
+ * 'rebel' branch modifications:
+ *     Copyright (C) 2010 Tuxera. All Rights Reserved.
+ */
+
+/*
  * Copyright (C) 2006-2008 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
@@ -25,7 +30,7 @@
 
 #define MACFUSE_TIMESTAMP __DATE__ ", " __TIME__
 
-#define MACFUSE_VERSION_LITERAL 2.1.7
+#define MACFUSE_VERSION_LITERAL 2.1.9
 #define MACFUSE_VERSION         MACFUSE_STRINGIFY(MACFUSE_VERSION_LITERAL)
 
 #define FUSE_KPI_GEQ(M, m) \
